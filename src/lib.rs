@@ -14,20 +14,6 @@ use yew_router::prelude::*;
 use components::login::Login;
 use components::chat::Chat;
 
-// add these use statements to the top of the file
-
-
-pub type User = Rc<UserInner>;
-
-#[derive(Debug, PartialEq)]
-pub struct UserInner {
-    pub username: RefCell<String>,
-}
-
-// When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
-// allocator.
-//
-// If you don't want to use `wee_alloc`, you can safely delete this.
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -43,12 +29,11 @@ pub enum Route {
     NotFound,
 }
 
-fn switch(selected_route: &Route) -> Html {
-    match selected_route {
-        Route::Login => html! {<Login />},
-        Route::Chat => html! {<Chat/>},
-        Route::NotFound => html! {<h1>{"404 baby"}</h1>},
-    }
+pub type User = Rc<UserInner>;
+
+#[derive(Debug, PartialEq)]
+pub struct UserInner {
+    pub username: RefCell<String>,
 }
 
 #[function_component(Main)]
@@ -60,14 +45,23 @@ fn main() -> Html {
     });
     html! {
         <ContextProvider<User> context={(*ctx).clone()}>
-        <BrowserRouter>
-            <div class="flex w-screen h-screen">
-                <Switch<Route> render={Switch::render(switch)}/>
-            </div>
-        </BrowserRouter>
+            <BrowserRouter>
+                <div class="flex w-screen h-screen">
+                    <Switch<Route> render={Switch::render(switch)}/>
+                </div>
+            </BrowserRouter>
         </ContextProvider<User>>
     }
 }
+
+fn switch(selected_route: &Route) -> Html {
+    match selected_route {
+        Route::Login => html! {<Login />},
+        Route::Chat => html! {<Chat/>},
+        Route::NotFound => html! {<h1>{"404 baby"}</h1>},
+    }
+}
+
 
 #[wasm_bindgen]
 pub fn run_app() -> Result<(), JsValue> {
